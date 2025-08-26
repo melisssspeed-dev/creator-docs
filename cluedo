@@ -1,0 +1,54 @@
+ClueGame.Suspects = {"Scarlet", "Mustard", "White", "Green", "Peacock", "Plum"}
+ClueGame.Weapons = {"Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench"}
+ClueGame.Rooms = {"Kitchen", "Ballroom", "Conservatory", "Dining Room", "Billiard Room", "Library", "Lounge", "Hall", "Study"}
+
+ClueGame.Solution = {
+    Suspect = ClueGame.Suspects[math.random(1, #ClueGame.Suspects)],
+    Weapon = ClueGame.Weapons[math.random(1, #ClueGame.Weapons)],
+    Room = ClueGame.Rooms[math.random(1, #ClueGame.Rooms)]
+}
+
+-- Remove solution cards from decks
+local function removeCard(deck, card)
+    for i, val in ipairs(deck) do
+        if val == card then
+            table.remove(deck, i)
+            break
+        end
+    end
+end
+
+removeCard(ClueGame.Suspects, ClueGame.Solution.Suspect)
+removeCard(ClueGame.Weapons, ClueGame.Solution.Weapon)
+removeCard(ClueGame.Rooms, ClueGame.Solution.Room)
+
+-- Combine and shuffle remaining cards
+local allCards = {}
+for _, v in ipairs(ClueGame.Suspects) do table.insert(allCards, v) end
+for _, v in ipairs(ClueGame.Weapons) do table.insert(allCards, v) end
+for _, v in ipairs(ClueGame.Rooms) do table.insert(allCards, v) end
+
+-- Shuffle function
+local function shuffle(tbl)
+    for i = #tbl, 2, -1 do
+        local j = math.random(i)
+        tbl[i], tbl[j] = tbl[j], tbl[i]
+    end
+end
+shuffle(allCards)
+
+-- Deal cards to players
+function ClueGame.DealCards(players)
+    local hands = {}
+    for _, player in ipairs(players) do
+        hands[player] = {}
+    end
+    local i = 1
+    for _, card in ipairs(allCards) do
+        table.insert(hands[players[((i-1)%#players)+1]], card)
+        i = i + 1
+    end
+    return hands
+end
+
+return ClueGame
